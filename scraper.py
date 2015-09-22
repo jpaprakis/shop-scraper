@@ -1,6 +1,7 @@
 import urllib.request
 import pdb
 import re
+from HTMLParser import HTMLParser
 #f=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
 #print (f.read())
 
@@ -165,10 +166,26 @@ class singleItem(object):
 		self.name=""
 		self.imgUrl=""
 
+"""PARSER"""
+# Subclass that overrides the parser handler methods
+class RetailHTMLParser(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+    	pdb.set_trace()
+    	print ("Encountered a start tag:", tag)
+    def handle_endtag(self, tag):
+    	pdb.set_trace()
+    	print ("Encountered an end tag :", tag)
+    def handle_data(self, data):
+    	pdb.set_trace()
+    	print ("Encountered some data  :", data)
+
 #Contains a list of all the objects we need to create for RW&Co
 AllClasses_RWC = [RWCWomenTops, RWCWomenBottoms, RWCWomenJackets, RWCWomenDresses,
  RWCWomenShoesAccessories, RWCMenTops, RWCMenBottoms, RWCMenSuits, RWCMenJackets, RWCMenShoesAccessories]
 newTop = AllClasses_RWC[0]()
-pdb.set_trace()
-
-#(class="product-tile"(?s).*?<img src="(.*?)"(?s).*<a class="name-link".*?>((?s).*?)</a>)?
+test_url=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
+test_html = test_url.read()
+#Encode to unicode 8 here
+encoded = test_html.decode('utf-8')
+test_parser = RetailHTMLParser()
+test_parser.feed(encoded)
