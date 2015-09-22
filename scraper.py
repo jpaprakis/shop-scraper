@@ -4,7 +4,7 @@ import re
 from HTMLParser import HTMLParser
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-
+import time
 #f=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
 #print (f.read())
 
@@ -205,8 +205,20 @@ AllClasses_RWC = [RWCWomenTops, RWCWomenBottoms, RWCWomenJackets, RWCWomenDresse
 newTop = AllClasses_RWC[0]()
 driver = webdriver.Chrome()
 driver.get("http://www.rw-co.com/en/womens-clothing-sales-tops")
-driver.execute_script("cur_height = 0; total_height = document.body.scrollHeight; while (cur_height<total_height){setTimeout(function(){cur_height += 100; window.scrollTo(0, cur_height);}, 100);}")
+driver.execute_script("cur_height = 0; total_height = document.body.scrollHeight; function scrolldown(){cur_height += 100; total_height = document.body.scrollHeight; window.scrollTo(0, cur_height); if (cur_height<total_height){setTimeout(scrolldown, 500);}} scrolldown();")
+
+time.sleep(50)
+
+# element = driver.findElement(By.xpath("//*"));
+#test_html = element.getAttribute("outerHTML");
+
+# toptag = driver.find_element_by_tag_name('html')
+# test_html = toptag.get_attribute('innerHTML')
+
+
 test_html = driver.page_source
+f = open('tempfile', 'w')
+f.write(test_html)
 # test_url=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
 # test_html = test_url.read() 
 #Encode to unicode 8 here
