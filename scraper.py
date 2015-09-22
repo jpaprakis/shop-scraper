@@ -2,6 +2,9 @@ import urllib.request
 import pdb
 import re
 from HTMLParser import HTMLParser
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
 #f=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
 #print (f.read())
 
@@ -167,25 +170,46 @@ class singleItem(object):
 		self.imgUrl=""
 
 """PARSER"""
+
 # Subclass that overrides the parser handler methods
-class RetailHTMLParser(HTMLParser):
-    def handle_starttag(self, tag, attrs):
-    	pdb.set_trace()
-    	print ("Encountered a start tag:", tag)
-    def handle_endtag(self, tag):
-    	pdb.set_trace()
-    	print ("Encountered an end tag :", tag)
-    def handle_data(self, data):
-    	pdb.set_trace()
-    	print ("Encountered some data  :", data)
+class RWCoParser(HTMLParser):
+	#Declare variables to denote different states of finding an item
+	def __init__(self):
+		HTMLParser.__init__(self)
+		self.no_item = 0
+		self.start_item = 1
+		self.item_link = 2
+		self.item_image = 3
+		self.item_name = 4
+		self.item_regprice = 5
+		self.item_saleprice = 6 
+		self.current_state = self.no_item
+
+	def handle_starttag(self, tag, attrs):
+	#This means we're at the start of an item: keep track of this w/ state
+		if (self.current_state == self.no_item) and (tag == 'li') and (len(attrs)>0) and (attrs[0][0] == "class") and (attrs[0][1].startswith("grid-tile")):
+				self.current_state = self.start_item
+		elif self.current_state == self.start_item and tag == 'a' and (len(attrs)>0) and attrs[0][0] == "class" and attrs[0][1].startswith("thumb-link"):
+			self.current_state = 0
+			link_to_item = attrs[1][1]
+			print(link_to_item+'\n')
+
+	#def handle_endtag(self, tag):
+		#print ("Encountered an end tag :", tag)
+	#def handle_data(self, data):
+		#print ("Encountered some data  :", data)
 
 #Contains a list of all the objects we need to create for RW&Co
 AllClasses_RWC = [RWCWomenTops, RWCWomenBottoms, RWCWomenJackets, RWCWomenDresses,
  RWCWomenShoesAccessories, RWCMenTops, RWCMenBottoms, RWCMenSuits, RWCMenJackets, RWCMenShoesAccessories]
 newTop = AllClasses_RWC[0]()
-test_url=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
-test_html = test_url.read()
+driver = webdriver.Chrome()
+driver.get("http://www.rw-co.com/en/womens-clothing-sales-tops")
+driver.execute_script("cur_height = 0; total_height = document.body.scrollHeight; while (cur_height<total_height){setTimeout(function(){cur_height += 100; window.scrollTo(0, cur_height);}, 100);}")
+test_html = driver.page_source
+# test_url=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
+# test_html = test_url.read() 
 #Encode to unicode 8 here
-encoded = test_html.decode('utf-8')
-test_parser = RetailHTMLParser()
-test_parser.feed(encoded)
+#encoded = test_html.decode('utf-8')
+test_parser = RWCoParser()
+test_parser.feed(test_html)
