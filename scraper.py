@@ -2,6 +2,7 @@ import urllib.request
 import pdb
 import re
 from HTMLParser import HTMLParser
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
@@ -205,9 +206,10 @@ AllClasses_RWC = [RWCWomenTops, RWCWomenBottoms, RWCWomenJackets, RWCWomenDresse
 newTop = AllClasses_RWC[0]()
 driver = webdriver.Chrome()
 driver.get("http://www.rw-co.com/en/womens-clothing-sales-tops")
-driver.execute_script("cur_height = 0; total_height = document.body.scrollHeight; function scrolldown(){cur_height += 100; total_height = document.body.scrollHeight; window.scrollTo(0, cur_height); if (cur_height<total_height){setTimeout(scrolldown, 500);}} scrolldown();")
+driver.execute_script("cur_height = 0; total_height = document.body.scrollHeight; function scrolldown(){cur_height += 100; total_height = document.body.scrollHeight; window.scrollTo(0, cur_height); if (cur_height<total_height){setTimeout(scrolldown, 250);} else{$( 'title' ).first().after( $( \"<div class='finished-all-scroll'/>\" ) );} } scrolldown();")
 
-time.sleep(50)
+
+#time.sleep(50)
 
 # element = driver.findElement(By.xpath("//*"));
 #test_html = element.getAttribute("outerHTML");
@@ -217,11 +219,20 @@ time.sleep(50)
 
 
 test_html = driver.page_source
+soup = BeautifulSoup(test_html, "html.parser")
+
+while soup.find('div', 'finished-all-scroll') == None:
+	test_html = driver.page_source
+	soup = BeautifulSoup(test_html, "html.parser")
+
 f = open('tempfile', 'w')
 f.write(test_html)
+
 # test_url=urllib.request.urlopen("http://www.rw-co.com/en/womens-clothing-sales-tops")
 # test_html = test_url.read() 
 #Encode to unicode 8 here
 #encoded = test_html.decode('utf-8')
-test_parser = RWCoParser()
-test_parser.feed(test_html)
+
+
+#test_parser = RWCoParser()
+#test_parser.feed(test_html)
