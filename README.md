@@ -7,12 +7,9 @@ Scrapes specific shops for their data and displays them as an aggregate for the 
 - Given HTML, parser can identify different item's links
 
 # Currently working on:
-- Putting in a check so that I don't execute python line to access the dom of the page until JS scroll has finished executing 
-  - will do this by inserting HTML into the dom when I'm done executing JS and checking for it in Python
+- Parsing all the HTML with BeautifulSoup, to populate classes (will add in DB later)
 
 # Next steps:
-- Getting parser to identify more than item's links, and save into objects I've created
-- Getting parser to run through every RW&Co object
 - Adding more retailers
 - Integrating with web:
   - Set up database for scraped data
